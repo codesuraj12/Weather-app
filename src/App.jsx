@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react'
 
 import './App.css'
 import Button from '@mui/material/Button';
+import Cloudy from '/cloudy.png';
+import Rain from '/rain.png';
+import Snow from '/snow.png';
+import Sun from '/sun.png';
+import Thunder from '/thunderstorm.png';
+import Background from '/background.jpg'
 import {
 
   TextField,
@@ -37,6 +43,26 @@ function App() {
     }
   }
 
+  // this is for weather image manually
+  const weatherImg = (main)=>{
+    switch(main){
+      case 'Clear':
+       return Sun 
+      case 'Clouds':
+       return Cloudy
+      case 'Rain':
+       return Rain
+   case "Thunderstorm":
+    return Thunder
+      case 'Snow':
+       return Snow
+  
+       default:
+        return Cloudy
+    }
+  }
+
+
   const currentTime = () => {
     const date = data.dt
     const timezone = data.timezone
@@ -50,7 +76,7 @@ function App() {
   // current weather featch
   useEffect(() => {
     // api key =107dff9ecbe206388e20a7343fac929f
-    fetch('https://api.openweathermap.org/data/2.5/weather?q=Belgaum&appid=107dff9ecbe206388e20a7343fac929f')
+    fetch('https://api.openweathermap.org/data/2.5/weather?q=auli&appid=107dff9ecbe206388e20a7343fac929f')
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
@@ -63,26 +89,13 @@ function App() {
       })
   }, [])
 
-  // 5 day weather fetch with 3 hour delay
-  useEffect(() => {
-    // `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
-    fetch('https://api.openweathermap.org/data/2.5/forecast?q=Belgaum&appid=107dff9ecbe206388e20a7343fac929f&units=metric')
-      .then((res) => res.json())
-      .then((data) => {
-        // console.log(data)
-        //         const date =  new Date()
-        //         const offsetMs = data.city.timezone * 1000;
-        //         const localOffsetMs = date.getTimezoneOffset() * 60000; 
-        //            // Adjust time correctly
-        //         const citytime = new Date(date.getTime()+offsetMs+localOffsetMs)
-        // console.log(citytime.toTimeString())
 
-        // console.log(data.list[0].dt)
-      })
-  }, [])
 
   return (
     <>
+    <div style={{backgroundImage:`url(${Background})`, minHeight:'100vh', padding:'8px' }}>
+
+   
       <Container maxWidth="md">
         <div>
           <Paper elevation={3} sx={{ p: 3, mb: 3, textAlign: 'center', bgcolor: 'primary.main', color: 'white' }}>
@@ -144,7 +157,7 @@ function App() {
                     </Box>
                     {data.sys && (
                       <Box sx={{ textAlign: 'center', mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 1 }}>
-                        <Box sx={{  background: 'linear-gradient(135deg, #226ba3, #1a4d7a)',padding:'12px',color:'white', boxShadow: '0 4px 12px rgba(0,0,0,0.3)'}}>
+                        <Box sx={{ background: 'linear-gradient(135deg, #226ba3, #1a4d7a)', padding: '12px', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
 
                           <Sunny sx={{ fontSize: 40, mb: 1, color: '#ff4d00' }} />
 
@@ -165,7 +178,7 @@ function App() {
                           {currentTime()}
                         </Box>
 
-                     <Box sx={{  background: 'linear-gradient(135deg, #226ba3, #1a4d7a)',padding:'12px',color:'white', boxShadow: '0 4px 12px rgba(0,0,0,0.3)'}}>
+                        <Box sx={{ background: 'linear-gradient(135deg, #226ba3, #1a4d7a)', padding: '12px', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
                           <WbTwilight sx={{ fontSize: 40, mb: 1, color: '#ee5d6c' }} />
 
                           <Typography variant="body2">
@@ -188,21 +201,37 @@ box is for the box
 sx ek shortcut styling prop hai jo tumhe direct component ke andar hi CSS likhne deta hai
 */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
+
+                      {/* Temperature */}
                       <Paper elevation={1} sx={{ p: 2, textAlign: 'center', minWidth: 150, bgcolor: 'info.light', color: 'white' }}>
                         <Thermostat sx={{ fontSize: 40, mb: 1 }} />
                         <Typography variant="h4" component="div">
-                          {Math.round(data.main.temp)}°C
+                          {Math.round(data.main.temp - 273.15)}°C
                         </Typography>
                         <Typography variant="body2">
                           Temperature
                         </Typography>
                         <Typography variant="caption" display="block">
-                          Feels like {Math.round(data.main.feels_like)}°C
+                          Feels like {Math.round(data.main.feels_like - 273.15)}°C
                         </Typography>
                       </Paper>
+
                       {/* Weather Description */}
-                      <Paper elevation={1} sx={{ p: 2, textAlign: 'center', minWidth: 150, bgcolor: 'info.light', color: 'white' }}>
-                        <Cloud sx={{ fontSize: 40, mb: 1 }} />
+                      <Paper elevation={1} sx={{ p: 2, textAlign: 'center', minWidth: 150, bgcolor: 'info.main', color: 'white' }}>
+                       <img
+  src={weatherImg(data.weather[0].main)}
+  alt={data.weather[0].description}
+  style={{ 
+    width: 60, 
+    height: 60, 
+    marginBottom: '8px',
+    
+ 
+    padding: '4px'
+  }}
+/>
+
+
                         <Typography variant="h6" component="div" sx={{ textTransform: 'capitalize' }}>
                           {data.weather[0].description}
                         </Typography>
@@ -277,6 +306,7 @@ sx ek shortcut styling prop hai jo tumhe direct component ke andar hi CSS likhne
           )}
         </div>
       </Container>
+       </div>
     </>
   )
 }
